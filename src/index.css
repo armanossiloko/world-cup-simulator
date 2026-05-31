@@ -53,6 +53,14 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .font-display {
   font-family: var(--font-display);
   letter-spacing: 0.01em;

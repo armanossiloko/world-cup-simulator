@@ -218,7 +218,7 @@ function TeamRow({
       };
 
   const rankButtonClass =
-    'flex h-11 w-11 items-center justify-center rounded-md text-zinc-500 transition-all duration-150 hover:bg-gold/15 hover:text-gold hover:ring-1 hover:ring-inset hover:ring-gold/30 hover:shadow-[0_0_10px_rgba(230,179,57,0.15)] active:scale-95 active:bg-gold/20 active:text-gold disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-zinc-600 disabled:hover:ring-0 disabled:hover:shadow-none disabled:active:scale-100';
+    'flex h-11 w-11 items-center justify-center rounded-md text-zinc-500 transition-all duration-150 hover:bg-gold/15 hover:text-gold hover:ring-1 hover:ring-inset hover:ring-gold/30 hover:shadow-[0_0_10px_rgba(230,179,57,0.15)] active:scale-95 active:bg-gold/20 active:text-gold disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-zinc-600 disabled:hover:ring-0 disabled:hover:shadow-none disabled:active:scale-100';
 
   const stopRowDrag = (e) => e.stopPropagation();
 
