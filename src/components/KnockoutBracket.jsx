@@ -6,6 +6,7 @@ export default function KnockoutBracket({
   knockoutWinners,
   onPick,
   disabled,
+  thirdPlaceCount = 0,
   champion,
   awards,
   onAwardsChange,
@@ -33,9 +34,14 @@ export default function KnockoutBracket({
         <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber/30 bg-amber/[0.06] px-4 py-3 text-sm text-amber">
           <InfoIcon />
           <span>
-            Live preview — the bracket fills in as you rank groups and pick your{' '}
-            <strong className="font-bold">8 third-placed teams</strong> above. Choosing winners
-            unlocks once all 8 are set.
+            Pick <strong className="font-bold">8 third-placed teams</strong> in Stage 2 above before
+            you can choose knockout winners here.{' '}
+            <strong className="font-bold tabular-nums">
+              {thirdPlaceCount}/8 selected
+            </strong>
+            {thirdPlaceCount < 8 && (
+              <> — {8 - thirdPlaceCount} more to go.</>
+            )}
           </span>
         </div>
       ) : (
@@ -47,16 +53,38 @@ export default function KnockoutBracket({
       )}
 
       <div className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 px-3 sm:px-5 lg:px-8">
-        <BracketTree
-          ref={bracketRef}
-          matchTeams={matchTeams}
-          knockoutWinners={knockoutWinners}
-          onPick={onPick}
-          champion={champion}
-          awards={awards}
-          onAwardsChange={onAwardsChange}
-          locked={disabled}
-        />
+        <div className="relative">
+          <BracketTree
+            ref={bracketRef}
+            matchTeams={matchTeams}
+            knockoutWinners={knockoutWinners}
+            onPick={onPick}
+            champion={champion}
+            awards={awards}
+            onAwardsChange={onAwardsChange}
+            locked={disabled}
+          />
+          {disabled && (
+            <div
+              className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-ink/75 backdrop-blur-[2px]"
+              aria-hidden
+            >
+              <div className="mx-4 max-w-sm rounded-xl border border-amber/40 bg-ink-2/95 px-6 py-5 text-center shadow-[0_20px_50px_-12px_rgba(0,0,0,0.8)]">
+                <LockIcon />
+                <p className="mt-3 font-display text-xl tracking-wide text-white">
+                  Bracket locked
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                  Select 8 third-placed teams in Stage 2 to unlock knockout picks.
+                </p>
+                <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber/30 bg-amber/[0.08] px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-amber">
+                  <span className="font-display text-base tabular-nums">{thirdPlaceCount}</span>
+                  <span className="text-amber/70">/ 8 picked</span>
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-10 flex flex-col items-center gap-2">
@@ -93,6 +121,14 @@ export default function KnockoutBracket({
         )}
       </div>
     </section>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="mx-auto h-8 w-8 text-amber" aria-hidden>
+      <path d="M12 2a4 4 0 0 0-4 4v2H6.5A2.5 2.5 0 0 0 4 10.5v9A2.5 2.5 0 0 0 6.5 22h11a2.5 2.5 0 0 0 2.5-2.5v-9A2.5 2.5 0 0 0 17.5 8H16V6a4 4 0 0 0-4-4Zm-2 4V6a2 2 0 1 1 4 0v2h-4Z" />
+    </svg>
   );
 }
 

@@ -193,6 +193,7 @@ export default function App() {
             knockoutWinners={knockoutWinners}
             onPick={handleKnockoutPick}
             disabled={!thirdComplete}
+            thirdPlaceCount={advancingThirdGroups.length}
             champion={champion}
             awards={awards}
             onAwardsChange={setAwards}
