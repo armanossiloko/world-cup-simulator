@@ -1,0 +1,58 @@
+---
+description: Use Conventional Commits format for all git commit messages
+alwaysApply: true
+---
+
+# Conventional Commits
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/) for every commit message in this repo.
+
+## Format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+```
+
+- **type** (required): `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+- **scope** (optional): area of change, e.g. `bracket`, `export`, `teams`
+- **description** (required): imperative mood, lowercase, no trailing period, max ~72 chars
+- **body** (optional): explain *why*, not *what*; wrap at 72 chars
+
+## Type guide
+
+| Type | Use when |
+|------|----------|
+| `feat` | New user-facing capability |
+| `fix` | Bug fix |
+| `docs` | README or documentation only |
+| `style` | Formatting, no logic change |
+| `refactor` | Code change, no feature or fix |
+| `perf` | Performance improvement |
+| `test` | Adding or updating tests |
+| `build` | Build system or dependencies |
+| `ci` | CI/CD workflows |
+| `chore` | Maintenance, tooling, misc |
+
+## Examples
+
+```
+feat(export): capture full bracket content in PNG download
+
+fix(ui): align knockout instruction text with stage header
+
+docs: regenerate README for current project state
+
+ci: add GitHub Pages deployment workflow
+
+refactor(data): move teams and flags into teams.json
+```
+
+## Breaking changes
+
+Add `!` after type/scope or a `BREAKING CHANGE:` footer:
+
+```
+feat(bracket)!: remove share URL encoding from UI
+```
