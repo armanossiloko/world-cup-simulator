@@ -33,6 +33,12 @@ function scrollToStage(stageKey, behavior = 'smooth') {
   if (el) el.scrollIntoView({ behavior, block: 'start' });
 }
 
+function scrollMobileToTop(behavior = 'smooth') {
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, behavior });
+  });
+}
+
 export default function App() {
   const isMobile = useIsMobile();
   const [mobileStage, setMobileStage] = useState('groups');
@@ -66,6 +72,7 @@ export default function App() {
     if (advancingThirdGroups.length === 8 && prevThirdCount.current < 8) {
       if (isMobile) {
         setMobileStage('bracket');
+        scrollMobileToTop();
       } else {
         setTimeout(() => scrollToStage('bracket'), 400);
       }
@@ -143,14 +150,23 @@ export default function App() {
   const goToThirdStage = () => {
     if (isMobile) {
       setMobileStage('third');
+      scrollMobileToTop();
       return;
     }
     scrollToStage('third');
   };
 
+  const handleMobileStageChange = useCallback((stage) => {
+    setMobileStage(stage);
+    if (stage === 'third' || stage === 'bracket') {
+      scrollMobileToTop();
+    }
+  }, []);
+
   const goToBracketStage = () => {
     if (isMobile) {
       setMobileStage('bracket');
+      scrollMobileToTop();
       return;
     }
     scrollToStage('bracket');
@@ -175,7 +191,7 @@ export default function App() {
         {isMobile && (
           <MobileStageNav
             activeStage={mobileStage}
-            onStageChange={setMobileStage}
+            onStageChange={handleMobileStageChange}
             groupsUnlocked
             thirdUnlocked={groupsComplete}
             bracketUnlocked={groupsComplete}

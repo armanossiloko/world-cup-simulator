@@ -24,6 +24,7 @@ export default function MobileBracket({
 }) {
   const [activeRoundId, setActiveRoundId] = useState('r32');
   const roundPanelRef = useRef(null);
+  const matchRefs = useRef({});
 
   const activeRound = DISPLAY_ROUNDS.find((round) => round.id === activeRoundId) ?? DISPLAY_ROUNDS[0];
   const roundProgress = getRoundProgress(activeRound, knockoutWinners);
@@ -50,6 +51,31 @@ export default function MobileBracket({
     setActiveRoundId(roundId);
     requestAnimationFrame(() => {
       roundPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  function handlePick(matchId, teamId) {
+    const alreadySelected = knockoutWinners[matchId] === teamId;
+    onPick(matchId, teamId);
+
+    if (alreadySelected) return;
+
+    const matchIndex = activeRound.matches.findIndex((match) => match.id === matchId);
+    if (matchIndex < 0) return;
+
+    const allAbovePicked = activeRound.matches
+      .slice(0, matchIndex)
+      .every((match) => knockoutWinners[match.id]);
+    if (!allAbovePicked) return;
+
+    const winnersAfterPick = { ...knockoutWinners, [matchId]: teamId };
+    const nextUnvotedMatch = activeRound.matches
+      .slice(matchIndex + 1)
+      .find((match) => !winnersAfterPick[match.id]);
+    if (!nextUnvotedMatch) return;
+
+    requestAnimationFrame(() => {
+      matchRefs.current[nextUnvotedMatch.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
@@ -132,11 +158,15 @@ export default function MobileBracket({
         {activeRound.matches.map((match, index) => (
           <MobileMatchCard
             key={match.id}
+            cardRef={(el) => {
+              if (el) matchRefs.current[match.id] = el;
+              else delete matchRefs.current[match.id];
+            }}
             matchId={match.id}
             matchNumber={index + 1}
             teams={matchTeams[match.id]}
             winnerId={knockoutWinners[match.id]}
-            onPick={onPick}
+            onPick={handlePick}
             locked={locked}
             highlight={match.id === 'final-1'}
           />
@@ -183,7 +213,7 @@ function roundShortName(name) {
     .replace('Semi-finals', 'Semis');
 }
 
-function MobileMatchCard({ matchId, matchNumber, teams, winnerId, onPick, locked, highlight }) {
+function MobileMatchCard({ cardRef, matchId, matchNumber, teams, winnerId, onPick, locked, highlight }) {
   const home = teams?.home;
   const away = teams?.away;
   const ready = home && away;
@@ -192,7 +222,8 @@ function MobileMatchCard({ matchId, matchNumber, teams, winnerId, onPick, locked
 
   return (
     <article
-      className={`overflow-hidden rounded-2xl border bg-surface shadow-sm ${
+      ref={cardRef}
+      className={`scroll-mt-36 overflow-hidden rounded-2xl border bg-surface shadow-sm ${
         highlight ? 'border-gold shadow-[0_0_20px_rgba(230,179,57,0.12)]' : 'border-line'
       }`}
     >
