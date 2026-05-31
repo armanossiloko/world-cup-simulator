@@ -147,9 +147,9 @@ function GroupCard({ letter, index, teams, rankings, onReorder, mobile = false }
             team={team}
             position={position}
             isLast={position === orderedTeams.length - 1}
-            isDragging={draggedIndex === position}
-            isOver={overIndex === position && draggedIndex !== null && draggedIndex !== position}
-            dropBelow={draggedIndex !== null && draggedIndex < position}
+            isDragging={!mobile && draggedIndex === position}
+            isOver={!mobile && overIndex === position && draggedIndex !== null && draggedIndex !== position}
+            dropBelow={!mobile && draggedIndex !== null && draggedIndex < position}
             onDragStart={() => setDraggedIndex(position)}
             onDragEnd={resetDrag}
             onDragEnter={() => setOverIndex(position)}
@@ -185,44 +185,51 @@ function TeamRow({
   const isDebut = DEBUT_TEAMS.has(team.id);
   const flagUrl = getFlagUrl(team.code);
 
-  return (
-    <li className="relative">
-      {/* Insertion indicator */}
-      {isOver && !dropBelow && (
-        <span className="drop-line pointer-events-none absolute -top-0.5 left-2 right-2 z-10 h-0.5 rounded-full bg-gold shadow-[0_0_8px_rgba(230,179,57,0.8)]" />
-      )}
+  const rowClassName = mobile
+    ? 'group relative flex items-center gap-2.5 rounded-xl px-2 py-2'
+    : `row-draggable group relative flex items-center gap-2.5 rounded-xl px-2 py-2 transition ${
+        isDragging
+          ? 'drag-ghost'
+          : isOver
+            ? 'bg-gold/10 ring-1 ring-inset ring-gold/40'
+            : 'hover:bg-white/[0.04]'
+      }`;
 
-      <div
-        draggable
-        onDragStart={(e) => {
+  const dragProps = mobile
+    ? {}
+    : {
+        draggable: true,
+        onDragStart: (e) => {
           e.dataTransfer.effectAllowed = 'move';
           e.dataTransfer.setData('text/plain', team.id);
           onDragStart();
-        }}
-        onDragEnd={onDragEnd}
-        onDragEnter={onDragEnter}
-        onDragOver={(e) => {
+        },
+        onDragEnd,
+        onDragEnter,
+        onDragOver: (e) => {
           e.preventDefault();
           e.dataTransfer.dropEffect = 'move';
           onDragEnter();
-        }}
-        onDrop={(e) => {
+        },
+        onDrop: (e) => {
           e.preventDefault();
           onDrop();
-        }}
-        className={`row-draggable group relative flex items-center gap-2.5 rounded-xl px-2 py-2 transition ${
-          isDragging
-            ? 'drag-ghost'
-            : isOver
-              ? 'bg-gold/10 ring-1 ring-inset ring-gold/40'
-              : 'hover:bg-white/[0.04]'
-        }`}
-      >
+        },
+      };
+
+  return (
+    <li className="relative">
+      {!mobile && isOver && !dropBelow && (
+        <span className="drop-line pointer-events-none absolute -top-0.5 left-2 right-2 z-10 h-0.5 rounded-full bg-gold shadow-[0_0_8px_rgba(230,179,57,0.8)]" />
+      )}
+
+      <div {...dragProps} className={rowClassName}>
         {/* status rail */}
         <span className={`h-9 w-1 shrink-0 rounded-full ${tone.rail}`} />
 
-        {/* grip — visual cue that the whole row drags */}
-        <GripIcon className="shrink-0 text-zinc-600 transition group-hover:text-zinc-400" />
+        {!mobile && (
+          <GripIcon className="shrink-0 text-zinc-600 transition group-hover:text-zinc-400" />
+        )}
 
         {/* rank */}
         <span
@@ -264,35 +271,40 @@ function TeamRow({
           </span>
         )}
 
-        {/* up/down controls — keyboard & touch friendly fallback for drag */}
-        <div className={`flex shrink-0 flex-col ${mobile ? 'gap-0.5' : ''}`}>
+        {/* up/down controls */}
+        <div
+          className={`flex shrink-0 ${
+            mobile
+              ? 'flex-row gap-1 rounded-lg border border-line/60 bg-ink-2/40 p-0.5'
+              : 'flex-col'
+          }`}
+        >
           <button
             type="button"
             onClick={onMoveUp}
             disabled={position === 0}
             aria-label={`Move ${team.name} up`}
-            className={`flex items-center justify-center rounded text-zinc-600 transition hover:text-gold disabled:opacity-25 disabled:hover:text-zinc-600 ${
-              mobile ? 'h-7 w-9' : 'h-4 w-5'
+            className={`flex items-center justify-center rounded text-zinc-600 transition hover:text-gold active:scale-95 disabled:opacity-25 disabled:hover:text-zinc-600 disabled:active:scale-100 ${
+              mobile ? 'h-11 w-11 rounded-md active:bg-white/[0.06]' : 'h-4 w-5'
             }`}
           >
-            <ChevronIcon dir="up" />
+            <ChevronIcon dir="up" large={mobile} />
           </button>
           <button
             type="button"
             onClick={onMoveDown}
             disabled={isLast}
             aria-label={`Move ${team.name} down`}
-            className={`flex items-center justify-center rounded text-zinc-600 transition hover:text-gold disabled:opacity-25 disabled:hover:text-zinc-600 ${
-              mobile ? 'h-7 w-9' : 'h-4 w-5'
+            className={`flex items-center justify-center rounded text-zinc-600 transition hover:text-gold active:scale-95 disabled:opacity-25 disabled:hover:text-zinc-600 disabled:active:scale-100 ${
+              mobile ? 'h-11 w-11 rounded-md active:bg-white/[0.06]' : 'h-4 w-5'
             }`}
           >
-            <ChevronIcon dir="down" />
+            <ChevronIcon dir="down" large={mobile} />
           </button>
         </div>
       </div>
 
-      {/* Insertion indicator (when dropping below) */}
-      {isOver && dropBelow && (
+      {!mobile && isOver && dropBelow && (
         <span className="drop-line pointer-events-none absolute -bottom-0.5 left-2 right-2 z-10 h-0.5 rounded-full bg-gold shadow-[0_0_8px_rgba(230,179,57,0.8)]" />
       )}
     </li>
@@ -307,7 +319,7 @@ function GripIcon({ className = '' }) {
   );
 }
 
-function ChevronIcon({ dir }) {
+function ChevronIcon({ dir, large = false }) {
   return (
     <svg
       viewBox="0 0 16 16"
@@ -316,7 +328,7 @@ function ChevronIcon({ dir }) {
       strokeWidth="2.2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-3 w-3"
+      className={large ? 'h-4 w-4' : 'h-3 w-3'}
       aria-hidden
     >
       {dir === 'up' ? <path d="M4 10l4-4 4 4" /> : <path d="M4 6l4 4 4-4" />}
