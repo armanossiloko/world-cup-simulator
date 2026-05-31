@@ -1,0 +1,25 @@
+{
+  "name": "FIFA World Cup 2026 Predictor & Simulator",
+  "short_name": "WC 2026",
+  "description": "Predict group standings, third-place teams, the knockout bracket, and individual awards for the 2026 FIFA World Cup.",
+  "start_url": "/world-cup-simulator/",
+  "scope": "/world-cup-simulator/",
+  "display": "standalone",
+  "background_color": "#080b16",
+  "theme_color": "#e6b339",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/world-cup-simulator/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/world-cup-simulator/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

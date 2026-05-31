@@ -59,6 +59,17 @@ npm run preview
 
 Production builds use the `/world-cup-simulator/` base path for GitHub Pages. Local dev uses `/`.
 
+### SEO and browser metadata
+
+The app ships with:
+
+- Rich `<meta>` tags, Open Graph, and Twitter Card data in [`index.html`](index.html)
+- JSON-LD (`WebApplication`) for search engines
+- [`public/robots.txt`](public/robots.txt), [`public/sitemap.xml`](public/sitemap.xml), and [`public/site.webmanifest`](public/site.webmanifest)
+- Favicon, Apple touch icon, and a 1200×630 social preview image (generated from [`public/og-image.svg`](public/og-image.svg) via `npm run generate:assets`)
+
+Run `npm run generate:assets` after editing the OG SVG. Production `npm run build` runs this automatically.
+
 ## How to use
 
 1. **Groups** — Drag teams within each group to set final standings (1st–4th).
@@ -87,7 +98,7 @@ Edit the JSON and restart the dev server to see changes. Knockout pairings and b
 
 ## Deployment
 
-The repo deploys to GitHub Pages automatically on push to `master` via [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml).
+The repo deploys to GitHub Pages automatically on push to `master` via [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml). The build copies `index.html` to `404.html` so deep links and refreshes work on GitHub Pages.
 
 To enable Pages on a fork:
 1. Go to **Settings → Pages**

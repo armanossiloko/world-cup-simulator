@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "generate:assets": "node scripts/generate-social-images.mjs",
+    "build": "npm run generate:assets && vite build",
+    "postbuild": "cp dist/index.html dist/404.html",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,6 +18,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.8",
     "@vitejs/plugin-react": "^4.5.2",
+    "sharp": "^0.34.2",
     "tailwindcss": "^4.1.8",
     "vite": "^6.3.5"
   }
