@@ -158,11 +158,14 @@ const BracketTree = forwardRef(function BracketTree(
           />
 
           {/* Center: Final + Champion */}
-          <div className="absolute" style={{ left: centerX, top: HEADER_H + CONTENT_PAD_Y, width: MATCH_WIDTH }}>
+          <div className="absolute z-10" style={{ left: centerX, top: HEADER_H + CONTENT_PAD_Y, width: MATCH_WIDTH }}>
             <div className="mb-4 text-center text-[11px] font-bold uppercase tracking-[0.16em] text-gold">
               Final
             </div>
-            <div style={{ position: 'absolute', top: finalY - HEADER_H - CONTENT_PAD_Y, width: MATCH_WIDTH }}>
+            <div
+              className="relative z-10"
+              style={{ position: 'absolute', top: finalY - HEADER_H - CONTENT_PAD_Y, width: MATCH_WIDTH }}
+            >
               <MatchNode
                 matchId="final-1"
                 teams={matchTeams['final-1']}
@@ -229,7 +232,7 @@ const BracketTree = forwardRef(function BracketTree(
 
           {/* Final connectors from semi-finals */}
           <svg
-            className="pointer-events-none absolute inset-0 overflow-visible"
+            className="pointer-events-none absolute inset-0 z-0 overflow-visible"
             width={totalWidth}
             height={bracketHeight}
           >
@@ -294,7 +297,7 @@ function HalfSide({
             return (
               <div
                 key={matchId}
-                className="absolute"
+                className="absolute z-10"
                 style={{ top, width: MATCH_WIDTH, height: MATCH_HEIGHT }}
               >
                 <MatchNode
@@ -311,7 +314,7 @@ function HalfSide({
       ))}
 
       <svg
-        className="pointer-events-none absolute inset-0 overflow-visible"
+        className="pointer-events-none absolute inset-0 z-0 overflow-visible"
         style={{ width: '100%', height: '100%' }}
       >
         {connectors.map(({ from, to, fromY, toY }) => {
@@ -393,7 +396,7 @@ function MatchNode({ matchId, teams, winnerId, onPick, highlight, locked }) {
 
   return (
     <div
-      className={`overflow-hidden rounded-lg border bg-surface/95 shadow-sm ${
+      className={`overflow-hidden rounded-lg border bg-surface shadow-sm ${
         highlight ? 'border-gold shadow-[0_0_16px_rgba(230,179,57,0.18)]' : 'border-line'
       }`}
     >
