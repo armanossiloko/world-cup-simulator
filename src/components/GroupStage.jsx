@@ -217,6 +217,11 @@ function TeamRow({
         },
       };
 
+  const rankButtonClass =
+    'flex h-11 w-11 items-center justify-center rounded-md text-zinc-500 transition-all duration-150 hover:bg-gold/15 hover:text-gold hover:ring-1 hover:ring-inset hover:ring-gold/30 hover:shadow-[0_0_10px_rgba(230,179,57,0.15)] active:scale-95 active:bg-gold/20 active:text-gold disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-zinc-600 disabled:hover:ring-0 disabled:hover:shadow-none disabled:active:scale-100';
+
+  const stopRowDrag = (e) => e.stopPropagation();
+
   return (
     <li className="relative">
       {!mobile && isOver && !dropBelow && (
@@ -272,34 +277,26 @@ function TeamRow({
         )}
 
         {/* up/down controls */}
-        <div
-          className={`flex shrink-0 ${
-            mobile
-              ? 'flex-row gap-1 rounded-lg border border-line/60 bg-ink-2/40 p-0.5'
-              : 'flex-col'
-          }`}
-        >
+        <div className="flex shrink-0 flex-row gap-1 rounded-lg border border-line/60 bg-ink-2/40 p-0.5">
           <button
             type="button"
             onClick={onMoveUp}
+            onMouseDown={stopRowDrag}
             disabled={position === 0}
             aria-label={`Move ${team.name} up`}
-            className={`flex items-center justify-center rounded text-zinc-600 transition hover:text-gold active:scale-95 disabled:opacity-25 disabled:hover:text-zinc-600 disabled:active:scale-100 ${
-              mobile ? 'h-11 w-11 rounded-md active:bg-white/[0.06]' : 'h-4 w-5'
-            }`}
+            className={rankButtonClass}
           >
-            <ChevronIcon dir="up" large={mobile} />
+            <ChevronIcon dir="up" large />
           </button>
           <button
             type="button"
             onClick={onMoveDown}
+            onMouseDown={stopRowDrag}
             disabled={isLast}
             aria-label={`Move ${team.name} down`}
-            className={`flex items-center justify-center rounded text-zinc-600 transition hover:text-gold active:scale-95 disabled:opacity-25 disabled:hover:text-zinc-600 disabled:active:scale-100 ${
-              mobile ? 'h-11 w-11 rounded-md active:bg-white/[0.06]' : 'h-4 w-5'
-            }`}
+            className={rankButtonClass}
           >
-            <ChevronIcon dir="down" large={mobile} />
+            <ChevronIcon dir="down" large />
           </button>
         </div>
       </div>
