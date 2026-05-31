@@ -1,5 +1,29 @@
 import { useRef, useState } from 'react';
+import { useIsMobile } from '../hooks/useIsMobile';
 import BracketTree from './BracketTree';
+import MobileBracket from './MobileBracket';
+
+const EXPORT_TREE_STYLE = {
+  position: 'fixed',
+  left: '0',
+  top: '0',
+  width: '2400px',
+  pointerEvents: 'none',
+};
+
+function applyExportTreeStyle(el, visible) {
+  Object.assign(el.style, EXPORT_TREE_STYLE, {
+    visibility: visible ? 'visible' : 'hidden',
+    opacity: visible ? '1' : '0',
+    zIndex: visible ? '-1' : '-50',
+  });
+}
+
+function waitForPaint() {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  });
+}
 
 export default function KnockoutBracket({
   matchTeams,
@@ -12,18 +36,30 @@ export default function KnockoutBracket({
   onAwardsChange,
   compact = false,
 }) {
+  const isMobile = useIsMobile();
   const bracketRef = useRef(null);
+  const exportTreeRef = useRef(null);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState(null);
 
   async function handleDownload() {
     setExportError(null);
     setExporting(true);
+    const exportRoot = exportTreeRef.current;
+
+    if (isMobile && exportRoot) {
+      applyExportTreeStyle(exportRoot, true);
+      await waitForPaint();
+    }
+
     try {
       await bracketRef.current?.exportImage();
     } catch (err) {
       setExportError(err instanceof Error ? err.message : 'Failed to generate image');
     } finally {
+      if (isMobile && exportRoot) {
+        applyExportTreeStyle(exportRoot, false);
+      }
       setExporting(false);
     }
   }
@@ -52,40 +88,77 @@ export default function KnockoutBracket({
         )
       )}
 
-      <div className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 px-3 sm:px-5 lg:px-8">
+      {isMobile ? (
         <div className="relative">
-          <BracketTree
-            ref={bracketRef}
+          <MobileBracket
             matchTeams={matchTeams}
             knockoutWinners={knockoutWinners}
             onPick={onPick}
+            locked={disabled}
             champion={champion}
             awards={awards}
             onAwardsChange={onAwardsChange}
-            locked={disabled}
           />
-          {disabled && (
-            <div
-              className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-ink/75 backdrop-blur-[2px]"
-              aria-hidden
-            >
-              <div className="mx-4 max-w-sm rounded-xl border border-amber/40 bg-ink-2/95 px-6 py-5 text-center shadow-[0_20px_50px_-12px_rgba(0,0,0,0.8)]">
-                <LockIcon />
-                <p className="mt-3 font-display text-xl tracking-wide text-white">
-                  Bracket locked
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-                  Select 8 third-placed teams in Stage 2 to unlock knockout picks.
-                </p>
-                <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber/30 bg-amber/[0.08] px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-amber">
-                  <span className="font-display text-base tabular-nums">{thirdPlaceCount}</span>
-                  <span className="text-amber/70">/ 8 picked</span>
-                </p>
-              </div>
-            </div>
-          )}
+          {disabled && <MobileBracketLock thirdPlaceCount={thirdPlaceCount} />}
+          {/* Full bracket tree for PNG export — unhidden briefly during capture */}
+          <div
+            ref={exportTreeRef}
+            aria-hidden
+            style={{
+              ...EXPORT_TREE_STYLE,
+              visibility: 'hidden',
+              opacity: 0,
+              zIndex: -50,
+            }}
+          >
+            <BracketTree
+              ref={bracketRef}
+              matchTeams={matchTeams}
+              knockoutWinners={knockoutWinners}
+              onPick={onPick}
+              champion={champion}
+              awards={awards}
+              onAwardsChange={onAwardsChange}
+              locked={disabled}
+            />
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 px-3 sm:px-5 lg:px-8">
+          <div className="relative">
+            <BracketTree
+              ref={bracketRef}
+              matchTeams={matchTeams}
+              knockoutWinners={knockoutWinners}
+              onPick={onPick}
+              champion={champion}
+              awards={awards}
+              onAwardsChange={onAwardsChange}
+              locked={disabled}
+            />
+            {disabled && (
+              <div
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-ink/75 backdrop-blur-[2px]"
+                aria-hidden
+              >
+                <div className="mx-4 max-w-sm rounded-xl border border-amber/40 bg-ink-2/95 px-6 py-5 text-center shadow-[0_20px_50px_-12px_rgba(0,0,0,0.8)]">
+                  <LockIcon />
+                  <p className="mt-3 font-display text-xl tracking-wide text-white">
+                    Bracket locked
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                    Select 8 third-placed teams in Stage 2 to unlock knockout picks.
+                  </p>
+                  <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber/30 bg-amber/[0.08] px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-amber">
+                    <span className="font-display text-base tabular-nums">{thirdPlaceCount}</span>
+                    <span className="text-amber/70">/ 8 picked</span>
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="mt-10 flex flex-col items-center gap-2">
         <button
@@ -121,6 +194,24 @@ export default function KnockoutBracket({
         )}
       </div>
     </section>
+  );
+}
+
+function MobileBracketLock({ thirdPlaceCount }) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-start justify-center rounded-2xl bg-ink/80 pt-16 backdrop-blur-[2px]">
+      <div className="mx-4 max-w-sm rounded-xl border border-amber/40 bg-ink-2/95 px-6 py-5 text-center shadow-[0_20px_50px_-12px_rgba(0,0,0,0.8)]">
+        <LockIcon />
+        <p className="mt-3 font-display text-xl tracking-wide text-white">Bracket locked</p>
+        <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+          Pick 8 third-placed teams in Stage 2 to unlock knockout picks.
+        </p>
+        <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber/30 bg-amber/[0.08] px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-amber">
+          <span className="font-display text-base tabular-nums">{thirdPlaceCount}</span>
+          <span className="text-amber/70">/ 8 picked</span>
+        </p>
+      </div>
+    </div>
   );
 }
 

@@ -46,14 +46,23 @@ function reorderList(items, fromIndex, toIndex) {
   return next;
 }
 
-export default function GroupStage({ groupRankings, onReorder, compact = false }) {
+export default function GroupStage({ groupRankings, onReorder, compact = false, mobile = false }) {
   return (
     <section>
       <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <p className="max-w-xl text-sm leading-relaxed text-zinc-400">
-          Drag a team — <span className="text-zinc-200">anywhere on its row</span> — to rank it
-          1st&nbsp;to&nbsp;4th. The top two go straight through; the best third-placed sides
-          fight for the final spots.
+          {mobile ? (
+            <>
+              Use the <span className="text-zinc-200">▲ ▼ buttons</span> to rank each team 1st to
+              4th. Top two advance; third-placed sides fight for the last R32 spots.
+            </>
+          ) : (
+            <>
+              Drag a team — <span className="text-zinc-200">anywhere on its row</span> — to rank it
+              1st&nbsp;to&nbsp;4th. The top two go straight through; the best third-placed sides
+              fight for the final spots.
+            </>
+          )}
         </p>
         <Legend />
       </div>
@@ -67,6 +76,7 @@ export default function GroupStage({ groupRankings, onReorder, compact = false }
             teams={GROUPS[letter]}
             rankings={groupRankings[letter]}
             onReorder={(orderedTeamIds) => onReorder(letter, orderedTeamIds)}
+            mobile={mobile}
           />
         ))}
       </div>
@@ -87,7 +97,7 @@ function Legend() {
   );
 }
 
-function GroupCard({ letter, index, teams, rankings, onReorder }) {
+function GroupCard({ letter, index, teams, rankings, onReorder, mobile = false }) {
   const orderedTeams = useMemo(
     () => rankings.map((id) => teams.find((t) => t.id === id)).filter(Boolean),
     [teams, rankings]
@@ -126,7 +136,7 @@ function GroupCard({ letter, index, teams, rankings, onReorder }) {
           </span>
         </div>
         <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-zinc-500">
-          Drag to rank
+          {mobile ? 'Tap ▲ ▼' : 'Drag to rank'}
         </span>
       </div>
 
@@ -146,6 +156,7 @@ function GroupCard({ letter, index, teams, rankings, onReorder }) {
             onDrop={() => handleDrop(position)}
             onMoveUp={() => move(position, position - 1)}
             onMoveDown={() => move(position, position + 1)}
+            mobile={mobile}
           />
         ))}
       </ul>
@@ -166,6 +177,7 @@ function TeamRow({
   onDrop,
   onMoveUp,
   onMoveDown,
+  mobile = false,
 }) {
   const meta = POSITION_META[position];
   const tone = TONES[meta.tone];
@@ -253,13 +265,15 @@ function TeamRow({
         )}
 
         {/* up/down controls — keyboard & touch friendly fallback for drag */}
-        <div className="flex shrink-0 flex-col">
+        <div className={`flex shrink-0 flex-col ${mobile ? 'gap-0.5' : ''}`}>
           <button
             type="button"
             onClick={onMoveUp}
             disabled={position === 0}
             aria-label={`Move ${team.name} up`}
-            className="flex h-4 w-5 items-center justify-center rounded text-zinc-600 transition hover:text-gold disabled:opacity-25 disabled:hover:text-zinc-600"
+            className={`flex items-center justify-center rounded text-zinc-600 transition hover:text-gold disabled:opacity-25 disabled:hover:text-zinc-600 ${
+              mobile ? 'h-7 w-9' : 'h-4 w-5'
+            }`}
           >
             <ChevronIcon dir="up" />
           </button>
@@ -268,7 +282,9 @@ function TeamRow({
             onClick={onMoveDown}
             disabled={isLast}
             aria-label={`Move ${team.name} down`}
-            className="flex h-4 w-5 items-center justify-center rounded text-zinc-600 transition hover:text-gold disabled:opacity-25 disabled:hover:text-zinc-600"
+            className={`flex items-center justify-center rounded text-zinc-600 transition hover:text-gold disabled:opacity-25 disabled:hover:text-zinc-600 ${
+              mobile ? 'h-7 w-9' : 'h-4 w-5'
+            }`}
           >
             <ChevronIcon dir="down" />
           </button>

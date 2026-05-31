@@ -13,11 +13,13 @@ import {
   isGroupStageComplete,
   isThirdPlaceComplete,
 } from './utils/bracket';
+import { useIsMobile } from './hooks/useIsMobile';
 import Header from './components/Header';
 import StageSection from './components/StageSection';
 import GroupStage from './components/GroupStage';
 import ThirdPlaceSelector from './components/ThirdPlaceSelector';
 import KnockoutBracket from './components/KnockoutBracket';
+import MobileStageNav from './components/MobileStageNav';
 import GitHubRepoLink from './components/GitHubRepoLink';
 
 const STAGE_IDS = {
@@ -32,6 +34,8 @@ function scrollToStage(stageKey, behavior = 'smooth') {
 }
 
 export default function App() {
+  const isMobile = useIsMobile();
+  const [mobileStage, setMobileStage] = useState('groups');
   const [groupRankings, setGroupRankings] = useState(createInitialGroupRankings);
   const [advancingThirdGroups, setAdvancingThirdGroups] = useState(createInitialThirdPlaceSelection);
   const [knockoutWinners, setKnockoutWinners] = useState(createInitialKnockoutWinners);
@@ -60,10 +64,14 @@ export default function App() {
 
   useEffect(() => {
     if (advancingThirdGroups.length === 8 && prevThirdCount.current < 8) {
-      setTimeout(() => scrollToStage('bracket'), 400);
+      if (isMobile) {
+        setMobileStage('bracket');
+      } else {
+        setTimeout(() => scrollToStage('bracket'), 400);
+      }
     }
     prevThirdCount.current = advancingThirdGroups.length;
-  }, [advancingThirdGroups.length]);
+  }, [advancingThirdGroups.length, isMobile]);
 
   const matchTeams = useMemo(
     () => getAllKnockoutMatchTeams(groupRankings, advancingThirdGroups, knockoutWinners),
@@ -128,12 +136,29 @@ export default function App() {
     setKnockoutWinners(createInitialKnockoutWinners());
     setAwards(createInitialAwards());
     prevThirdCount.current = 0;
+    setMobileStage('groups');
     window.history.replaceState({}, '', window.location.pathname);
   }, []);
 
-  const goToThirdStage = () => scrollToStage('third');
+  const goToThirdStage = () => {
+    if (isMobile) {
+      setMobileStage('third');
+      return;
+    }
+    scrollToStage('third');
+  };
 
-  const goToBracketStage = () => scrollToStage('bracket');
+  const goToBracketStage = () => {
+    if (isMobile) {
+      setMobileStage('bracket');
+      return;
+    }
+    scrollToStage('bracket');
+  };
+
+  const showGroups = !isMobile || mobileStage === 'groups';
+  const showThird = !isMobile || mobileStage === 'third';
+  const showBracket = !isMobile || mobileStage === 'bracket';
 
   return (
     <div className="relative min-h-screen text-zinc-100">
@@ -147,65 +172,95 @@ export default function App() {
 
       <div className="sticky top-0 z-50 bg-ink/85 backdrop-blur-xl">
         <Header onReset={handleReset} />
+        {isMobile && (
+          <MobileStageNav
+            activeStage={mobileStage}
+            onStageChange={setMobileStage}
+            groupsUnlocked
+            thirdUnlocked={groupsComplete}
+            bracketUnlocked={groupsComplete}
+          />
+        )}
       </div>
 
-      <Hero />
+      <Hero compact={isMobile} />
 
-      <main className="relative z-10 mx-auto max-w-[1840px] space-y-20 px-4 pb-24 pt-4 sm:px-6 lg:px-8">
-        <StageSection
-          id={STAGE_IDS.groups}
-          stageNumber={1}
-          title="Predict the Group Stage"
-          unlocked
-          sectionRef={groupsRef}
-        >
-          <GroupStage groupRankings={groupRankings} onReorder={handleGroupReorder} compact />
-          {groupsComplete && (
-            <div className="mt-10 flex justify-center">
-              <ContinueButton onClick={goToThirdStage}>Continue to best 3rd place →</ContinueButton>
-            </div>
-          )}
-        </StageSection>
+      <main
+        className={`relative z-10 mx-auto max-w-[1840px] px-4 pb-24 pt-4 sm:px-6 lg:px-8 ${
+          isMobile ? 'space-y-8' : 'space-y-20'
+        }`}
+      >
+        {showGroups && (
+          <StageSection
+            id={STAGE_IDS.groups}
+            stageNumber={1}
+            title="Predict the Group Stage"
+            unlocked
+            sectionRef={groupsRef}
+            compact={isMobile}
+          >
+            <GroupStage
+              groupRankings={groupRankings}
+              onReorder={handleGroupReorder}
+              compact
+              mobile={isMobile}
+            />
+            {groupsComplete && (
+              <div className="mt-10 flex justify-center">
+                <ContinueButton onClick={goToThirdStage}>
+                  {isMobile ? 'Next: 3rd place →' : 'Continue to best 3rd place →'}
+                </ContinueButton>
+              </div>
+            )}
+          </StageSection>
+        )}
 
-        <StageSection
-          id={STAGE_IDS.third}
-          stageNumber={2}
-          title="Pick 8 Third-Placed Teams"
-          unlocked={groupsComplete}
-          sectionRef={thirdRef}
-        >
-          {!groupsComplete ? (
-            <p className="text-sm text-zinc-500">Complete the group stage above to unlock this step.</p>
-          ) : (
-            <ThirdPlaceSelector
-              thirdPlaceTeams={thirdPlaceTeams}
-              advancingThirdGroups={advancingThirdGroups}
-              onToggle={handleToggleThird}
-              onContinue={goToBracketStage}
+        {showThird && (
+          <StageSection
+            id={STAGE_IDS.third}
+            stageNumber={2}
+            title="Pick 8 Third-Placed Teams"
+            unlocked={groupsComplete}
+            sectionRef={thirdRef}
+            compact={isMobile}
+          >
+            {!groupsComplete ? (
+              <p className="text-sm text-zinc-500">Complete the group stage above to unlock this step.</p>
+            ) : (
+              <ThirdPlaceSelector
+                thirdPlaceTeams={thirdPlaceTeams}
+                advancingThirdGroups={advancingThirdGroups}
+                onToggle={handleToggleThird}
+                onContinue={goToBracketStage}
+                compact
+                mobile={isMobile}
+              />
+            )}
+          </StageSection>
+        )}
+
+        {showBracket && (
+          <StageSection
+            id={STAGE_IDS.bracket}
+            stageNumber={3}
+            title="Knockout Bracket & Awards"
+            unlocked
+            sectionRef={bracketRef}
+            compact={isMobile}
+          >
+            <KnockoutBracket
+              matchTeams={matchTeams}
+              knockoutWinners={knockoutWinners}
+              onPick={handleKnockoutPick}
+              disabled={!thirdComplete}
+              thirdPlaceCount={advancingThirdGroups.length}
+              champion={champion}
+              awards={awards}
+              onAwardsChange={setAwards}
               compact
             />
-          )}
-        </StageSection>
-
-        <StageSection
-          id={STAGE_IDS.bracket}
-          stageNumber={3}
-          title="Knockout Bracket & Awards"
-          unlocked
-          sectionRef={bracketRef}
-        >
-          <KnockoutBracket
-            matchTeams={matchTeams}
-            knockoutWinners={knockoutWinners}
-            onPick={handleKnockoutPick}
-            disabled={!thirdComplete}
-            thirdPlaceCount={advancingThirdGroups.length}
-            champion={champion}
-            awards={awards}
-            onAwardsChange={setAwards}
-            compact
-          />
-        </StageSection>
+          </StageSection>
+        )}
       </main>
 
       <footer className="relative z-10 border-t border-line/60 py-8 text-center">
@@ -220,7 +275,26 @@ export default function App() {
   );
 }
 
-function Hero() {
+function Hero({ compact = false }) {
+  if (compact) {
+    return (
+      <section className="relative z-10 border-b border-line/60">
+        <div className="mx-auto max-w-lg px-4 py-6">
+          <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-line bg-surface/50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-grass" />
+            48 teams · 104 matches
+          </p>
+          <h2 className="font-display text-3xl leading-none tracking-wide text-white">
+            CALL THE <span className="text-shimmer">TOURNAMENT</span>
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+            Rank groups, pick eight third-placed sides, then fight through the knockouts.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="relative z-10 overflow-hidden border-b border-line/60">
       <div className="mx-auto max-w-[1840px] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">

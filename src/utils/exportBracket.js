@@ -7,6 +7,21 @@ function slugify(name) {
     .replace(/(^-|-$)/g, '');
 }
 
+async function waitForImages(root) {
+  const images = root.querySelectorAll('img');
+  await Promise.all(
+    [...images].map(
+      (img) =>
+        img.complete && img.naturalWidth > 0
+          ? Promise.resolve()
+          : new Promise((resolve) => {
+              img.addEventListener('load', resolve, { once: true });
+              img.addEventListener('error', resolve, { once: true });
+            })
+    )
+  );
+}
+
 export async function downloadBracketImage({ container, content, scaleWrapper, width, champion }) {
   if (!container || !content || !scaleWrapper) {
     throw new Error('Bracket not ready for export');
@@ -35,6 +50,8 @@ export async function downloadBracketImage({ container, content, scaleWrapper, w
   await new Promise((resolve) => {
     requestAnimationFrame(() => requestAnimationFrame(resolve));
   });
+
+  await waitForImages(content);
 
   const exportWidth = content.scrollWidth;
   const exportHeight = content.scrollHeight;

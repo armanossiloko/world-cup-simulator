@@ -1,9 +1,9 @@
-export default function StageSection({ id, stageNumber, title, unlocked, children, sectionRef }) {
+export default function StageSection({ id, stageNumber, title, unlocked, children, sectionRef, compact = false }) {
   return (
     <section
       id={id}
       ref={sectionRef}
-      className={`scroll-mt-44 transition-opacity duration-500 ${
+      className={`transition-opacity duration-500 ${compact ? 'scroll-mt-36' : 'scroll-mt-44'} ${
         unlocked ? 'opacity-100' : 'opacity-45'
       }`}
     >
