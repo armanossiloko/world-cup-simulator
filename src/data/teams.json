@@ -1,0 +1,74 @@
+{
+  "A": [
+    { "id": "mex", "name": "Mexico", "code": "MEX", "flag": "🇲🇽", "iso": "mx", "host": true },
+    { "id": "rsa", "name": "South Africa", "code": "RSA", "flag": "🇿🇦", "iso": "za" },
+    { "id": "kor", "name": "South Korea", "code": "KOR", "flag": "🇰🇷", "iso": "kr" },
+    { "id": "cze", "name": "Czechia", "code": "CZE", "flag": "🇨🇿", "iso": "cz" }
+  ],
+  "B": [
+    { "id": "can", "name": "Canada", "code": "CAN", "flag": "🇨🇦", "iso": "ca", "host": true },
+    { "id": "bih", "name": "Bosnia & Herzegovina", "code": "BIH", "flag": "🇧🇦", "iso": "ba" },
+    { "id": "qat", "name": "Qatar", "code": "QAT", "flag": "🇶🇦", "iso": "qa" },
+    { "id": "sui", "name": "Switzerland", "code": "SUI", "flag": "🇨🇭", "iso": "ch" }
+  ],
+  "C": [
+    { "id": "bra", "name": "Brazil", "code": "BRA", "flag": "🇧🇷", "iso": "br" },
+    { "id": "mar", "name": "Morocco", "code": "MAR", "flag": "🇲🇦", "iso": "ma" },
+    { "id": "hai", "name": "Haiti", "code": "HAI", "flag": "🇭🇹", "iso": "ht" },
+    { "id": "sco", "name": "Scotland", "code": "SCO", "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "iso": "gb-sct" }
+  ],
+  "D": [
+    { "id": "usa", "name": "United States", "code": "USA", "flag": "🇺🇸", "iso": "us", "host": true },
+    { "id": "par", "name": "Paraguay", "code": "PAR", "flag": "🇵🇾", "iso": "py" },
+    { "id": "aus", "name": "Australia", "code": "AUS", "flag": "🇦🇺", "iso": "au" },
+    { "id": "tur", "name": "Turkiye", "code": "TUR", "flag": "🇹🇷", "iso": "tr" }
+  ],
+  "E": [
+    { "id": "ger", "name": "Germany", "code": "GER", "flag": "🇩🇪", "iso": "de" },
+    { "id": "cuw", "name": "Curaçao", "code": "CUW", "flag": "🇨🇼", "iso": "cw", "debut": true },
+    { "id": "civ", "name": "Ivory Coast", "code": "CIV", "flag": "🇨🇮", "iso": "ci" },
+    { "id": "ecu", "name": "Ecuador", "code": "ECU", "flag": "🇪🇨", "iso": "ec" }
+  ],
+  "F": [
+    { "id": "ned", "name": "Netherlands", "code": "NED", "flag": "🇳🇱", "iso": "nl" },
+    { "id": "jpn", "name": "Japan", "code": "JPN", "flag": "🇯🇵", "iso": "jp" },
+    { "id": "swe", "name": "Sweden", "code": "SWE", "flag": "🇸🇪", "iso": "se" },
+    { "id": "tun", "name": "Tunisia", "code": "TUN", "flag": "🇹🇳", "iso": "tn" }
+  ],
+  "G": [
+    { "id": "bel", "name": "Belgium", "code": "BEL", "flag": "🇧🇪", "iso": "be" },
+    { "id": "egy", "name": "Egypt", "code": "EGY", "flag": "🇪🇬", "iso": "eg" },
+    { "id": "irn", "name": "Iran", "code": "IRN", "flag": "🇮🇷", "iso": "ir" },
+    { "id": "nzl", "name": "New Zealand", "code": "NZL", "flag": "🇳🇿", "iso": "nz" }
+  ],
+  "H": [
+    { "id": "esp", "name": "Spain", "code": "ESP", "flag": "🇪🇸", "iso": "es" },
+    { "id": "cpv", "name": "Cape Verde", "code": "CPV", "flag": "🇨🇻", "iso": "cv", "debut": true },
+    { "id": "ksa", "name": "Saudi Arabia", "code": "KSA", "flag": "🇸🇦", "iso": "sa" },
+    { "id": "uru", "name": "Uruguay", "code": "URU", "flag": "🇺🇾", "iso": "uy" }
+  ],
+  "I": [
+    { "id": "fra", "name": "France", "code": "FRA", "flag": "🇫🇷", "iso": "fr" },
+    { "id": "sen", "name": "Senegal", "code": "SEN", "flag": "🇸🇳", "iso": "sn" },
+    { "id": "irq", "name": "Iraq", "code": "IRQ", "flag": "🇮🇶", "iso": "iq" },
+    { "id": "nor", "name": "Norway", "code": "NOR", "flag": "🇳🇴", "iso": "no" }
+  ],
+  "J": [
+    { "id": "arg", "name": "Argentina", "code": "ARG", "flag": "🇦🇷", "iso": "ar" },
+    { "id": "alg", "name": "Algeria", "code": "ALG", "flag": "🇩🇿", "iso": "dz" },
+    { "id": "aut", "name": "Austria", "code": "AUT", "flag": "🇦🇹", "iso": "at" },
+    { "id": "jor", "name": "Jordan", "code": "JOR", "flag": "🇯🇴", "iso": "jo", "debut": true }
+  ],
+  "K": [
+    { "id": "por", "name": "Portugal", "code": "POR", "flag": "🇵🇹", "iso": "pt" },
+    { "id": "cod", "name": "DR Congo", "code": "COD", "flag": "🇨🇩", "iso": "cd" },
+    { "id": "uzb", "name": "Uzbekistan", "code": "UZB", "flag": "🇺🇿", "iso": "uz", "debut": true },
+    { "id": "col", "name": "Colombia", "code": "COL", "flag": "🇨🇴", "iso": "co" }
+  ],
+  "L": [
+    { "id": "eng", "name": "England", "code": "ENG", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "iso": "gb-eng" },
+    { "id": "cro", "name": "Croatia", "code": "CRO", "flag": "🇭🇷", "iso": "hr" },
+    { "id": "gha", "name": "Ghana", "code": "GHA", "flag": "🇬🇭", "iso": "gh" },
+    { "id": "pan", "name": "Panama", "code": "PAN", "flag": "🇵🇦", "iso": "pa" }
+  ]
+}
